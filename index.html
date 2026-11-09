@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Shadows of the giants | Winter sun at street level in eight UK city centres</title>
+<meta name="description" content="Building shadows hour by hour on 21 December, the equinox and 21 June in eight UK city centres: which streets and squares lose their winter sun to towers.">
+<meta property="og:title" content="Shadows of the giants">
+<meta property="og:description" content="At noon on 21 December the Shard casts a shadow 1,146 m long. Hour-by-hour shadows of the towers in eight UK city centres.">
+<meta property="og:image" content="https://maps.tristanhotham.com/tower-shadows/header.png">
+<meta property="og:url" content="https://maps.tristanhotham.com/tower-shadows/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800;9..144,900&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=MedievalSharp&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+<style>
+/* Parchment, iron-gall black, vermilion and river blue: the palette of The Inked World. */
+:root{
+  --bg:#F6EED8; --panel:#EFE3C4; --fg:#2B2119; --muted:#6E604E; --rule:#E2D3AE; --card:#FBF5E4; --border:#D3C29A;
+  --hot:#A3261B; --cool:#3D6E9E; --gold:#B8862B;
+  --display:"Fraunces",Georgia,"Times New Roman",serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --hand:"MedievalSharp","Fraunces",Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1A1612; --panel:#241E18; --fg:#EFE6D4; --muted:#ADA08B; --rule:#3A3128; --card:#211B15; --border:#4D4234;
+  --hot:#E07A6C; --cool:#8FB4DA; --gold:#E2B860; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1A1612; --panel:#241E18; --fg:#EFE6D4; --muted:#ADA08B; --rule:#3A3128; --card:#211B15; --border:#4D4234;
+  --hot:#E07A6C; --cool:#8FB4DA; --gold:#E2B860; color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 18px/1.62 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));overflow-x:hidden}
+.wrap{max-width:720px;margin:0 auto;padding-block:28px 64px}
+a{color:inherit;text-decoration-color:var(--hot);text-underline-offset:3px}
+.kicker{font:500 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.kicker b{background:var(--hot);color:#fff;padding:5px 8px;font-weight:500}
+h2{font:800 34px/1.04 var(--display);letter-spacing:-.01em;margin:54px 0 10px;text-wrap:balance}
+h2 .n{font:500 13px/1 var(--mono);color:var(--hot);display:block;letter-spacing:.1em;margin-bottom:10px}
+p{margin:0 0 16px}
+.lede::first-letter{font:400 76px/.8 var(--hand);float:left;margin:6px 10px 0 0;color:var(--hot)}
+.byline{font:400 13px/1.4 var(--mono);color:var(--muted);margin-top:14px}
+.src{font:400 12px/1.45 var(--mono);color:var(--muted);margin-top:10px}
+ul.plain{padding-left:20px} ul.plain li{margin:4px 0}
+details{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 0;margin:18px 0;font-size:16px}
+summary{font:500 13px/1.4 var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;color:var(--muted)}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0}
+.cta a{font:500 13px/1 var(--mono);text-decoration:none;border:1px solid var(--fg);padding:11px 14px;border-radius:3px}
+.cta a.p{background:var(--hot);border-color:var(--hot);color:#fff}
+footer{border-top:6px double var(--fg);margin-top:56px;padding-top:16px;font:400 13px/1.55 var(--mono);color:var(--muted)}
+footer p{margin:0 0 10px}
+.theme{font:500 12px/1 var(--mono);background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:3px;padding:4px 8px;cursor:pointer;min-height:28px}
+.figure{margin:22px 0}
+.figure img{width:100%;display:block;border:1px solid var(--border);background:#F3E5BF}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:22px 0}
+.stat b{display:block;font:900 40px/1 var(--display);color:var(--hot)}
+.stat span{font:400 13px/1.35 var(--mono);color:var(--muted)}
+table.t{width:100%;border-collapse:collapse;font:400 13.5px/1.4 var(--mono);margin:12px 0 4px}
+table.t th{text-align:left;font-weight:500;border-bottom:2px solid var(--fg);padding:5px 6px 5px 0}
+table.t td{border-bottom:1px solid var(--rule);padding:5px 6px 5px 0;vertical-align:top}
+table.t td.r,table.t th.r{text-align:right}
+.tscroll{overflow-x:auto}
+
+/* ---- the map ---- */
+.topbar{height:40px;display:flex;align-items:center;gap:14px;margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:0 max(14px,env(safe-area-inset-left,0px));border-bottom:3px double var(--fg);background:var(--bg);overflow:hidden;white-space:nowrap}
+.tb-name{font:400 19px/1 var(--hand);color:var(--hot);text-decoration:none;letter-spacing:.03em}
+.tb-k{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tb-links{margin-left:auto;display:flex;gap:16px;align-items:center;font:500 12px/1 var(--mono)}
+.tb-links a{text-decoration:none}.tb-links a:hover{text-decoration:underline}
+.mapband{width:100vw;margin-left:calc(50% - 50vw)}
+.pane{position:relative;height:calc(100vh - 43px);height:calc(100svh - 43px);min-height:460px;border-bottom:1px solid #BCA676;background:#F3E5BF;overflow:hidden;flex:1 1 50%;min-width:0}
+.pane::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;box-shadow:inset 0 0 90px rgba(120,84,30,.22), inset 0 0 18px rgba(120,84,30,.18)}
+.cartouche{position:absolute;left:14px;top:14px;z-index:5;max-width:min(330px,calc(100% - 28px));background:rgba(251,243,220,.95);color:#2B2119;border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:10px 14px 10px;box-shadow:0 3px 14px rgba(60,40,10,.22)}
+.cartouche::before,.cartouche::after{content:"";position:absolute;width:9px;height:9px;background:#A3261B;border:1px solid #2B2119;border-radius:50%}
+.cartouche::before{left:-6px;top:-6px}.cartouche::after{right:-6px;bottom:-6px}
+.cartouche h1{font:900 clamp(22px,2.3vw,30px)/1 var(--display);letter-spacing:-.015em;margin:6px 0 0;color:#2B2119}
+.cartouche h1 .a{color:#A3261B;font-family:var(--hand);font-weight:400;letter-spacing:.03em}
+.cartouche .dek{font-size:13.5px;line-height:1.36;margin:6px 0 0}
+.cartouche .byline{font-size:11px;color:#6E604E;margin-top:6px}
+.cartouche .kicker{color:#6E604E}
+.ct-fold{position:absolute;right:6px;top:5px;width:26px;height:26px;border:0;background:none;color:#A3261B;font:400 18px/1 var(--hand);cursor:pointer;padding:0}
+.ct-toggle{display:none;font:400 17px/1 var(--hand);color:#A3261B;background:none;border:0;padding:2px 0;cursor:pointer;letter-spacing:.03em;min-height:30px}
+.cartouche.folded .ct-body,.cartouche.folded .ct-fold{display:none}.cartouche.folded .ct-toggle{display:block}.cartouche.folded{padding:4px 11px}
+.ov{position:absolute;z-index:5;font:400 13px/1.3 var(--mono);color:#2B2119}
+.ov-top{right:54px;top:10px;max-width:calc(100% - 480px);display:flex;flex-direction:column;gap:6px;align-items:flex-end;pointer-events:none}
+.ov-top>*{pointer-events:auto}
+.srch{position:relative;width:min(340px,100%)}
+.srch input{width:100%;font:400 15px/1 var(--mono);background:rgba(251,245,228,.96);color:#2B2119;border:1px solid #9C8656;border-radius:3px;padding:9px 10px;min-height:40px;box-shadow:0 1px 4px rgba(60,40,10,.18)}
+.srch input:focus-visible,.chip:focus-visible,.lp label:focus-within,.tl button:focus-visible{outline:2px solid #A3261B;outline-offset:2px}
+.sug{position:absolute;left:0;right:0;top:100%;margin:2px 0 0;padding:0;list-style:none;background:#FBF5E4;border:1px solid #9C8656;max-height:300px;overflow:auto;display:none;box-shadow:0 3px 10px rgba(60,40,10,.2);z-index:12}
+.sug li{padding:8px 10px;cursor:pointer;border-bottom:1px solid #E7D9B6}
+.sug li span{color:#7A6A52;font-size:12px}
+.sug li[aria-selected="true"],.sug li:hover{background:#EFE1BC}
+.chips{display:flex;gap:6px;overflow-x:auto;max-width:100%;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;font:500 12px/1 var(--mono);background:rgba(251,245,228,.94);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:8px 11px;cursor:pointer;min-height:34px;white-space:nowrap;box-shadow:0 1px 3px rgba(60,40,10,.14)}
+.chip:hover{background:#EFE1BC}
+.chip.lyr{background:#2B2119;color:#F6EED8;border-color:#2B2119}
+.lp{position:absolute;right:54px;top:104px;z-index:9;background:rgba(251,245,228,.98);border:1px solid #9C8656;border-radius:4px;padding:10px 12px 8px;font:400 13px/1.3 var(--mono);color:#2B2119;box-shadow:0 3px 12px rgba(60,40,10,.25);display:none;min-width:240px;max-height:calc(100% - 200px);overflow:auto}
+.lp.open{display:block}
+.lp h4{margin:0 0 6px;font:500 11px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#7A6A52}
+.lp h5{margin:9px 0 1px;padding-top:7px;border-top:1px solid #E2D3AE;font:600 10.5px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#A3261B}
+.lp h4+h5{border-top:0;padding-top:0;margin-top:4px}
+.lp label{display:flex;gap:8px;align-items:center;padding:5px 0;cursor:pointer;min-height:30px}
+.lp input{accent-color:#A3261B;width:16px;height:16px;flex:none}
+.lp canvas{width:22px;height:22px;flex:none}
+.ov-bl{position:absolute;left:12px;bottom:12px;z-index:4;display:flex;align-items:flex-end;gap:6px;pointer-events:none}
+.rose svg{display:block}
+.maplibregl-popup-content{background:#FBF5E4;color:#2B2119;font:400 13px/1.45 var(--mono);border:1px solid #9C8656;border-radius:4px;padding:10px 12px;box-shadow:0 3px 12px rgba(60,40,10,.25);max-width:310px;max-height:60vh;overflow:auto}
+.maplibregl-popup-content b.t{display:block;font:400 20px/1.15 var(--hand);color:#A3261B;margin-bottom:3px;letter-spacing:.02em;padding-right:14px}
+.maplibregl-popup-content table{border-collapse:collapse;margin:5px 0}
+.maplibregl-popup-content td{padding:1px 8px 1px 0;vertical-align:top}
+.maplibregl-popup-content td:first-child{color:#7A6A52}
+.maplibregl-popup-content .nt{color:#7A6A52;font-size:11.5px;margin:5px 0 0}
+.maplibregl-popup-content .lk{margin-top:6px;padding-top:6px;border-top:1px dashed #C9B583;display:flex;flex-wrap:wrap;gap:4px 12px}
+.maplibregl-popup-content a{color:#A3261B}
+.maplibregl-popup-tip{border-top-color:#9C8656!important;border-bottom-color:#9C8656!important}
+.maplibregl-ctrl-attrib{font:400 11px/1.3 var(--mono)!important;background:rgba(251,245,228,.85)!important}
+.maplibregl-ctrl-group{background:#FBF5E4!important;border:1px solid #9C8656}
+.maplibregl-popup{z-index:7}
+.nojs{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:400 14px var(--mono);color:#6E604E;padding:20px;text-align:center}
+.keyrow{display:flex;flex-wrap:wrap;gap:6px 18px;font:400 13px/1.3 var(--mono);color:var(--muted);margin:12px 0}
+.keyrow span{display:flex;align-items:center;gap:6px}.keyrow canvas{width:24px;height:24px}
+@media (max-width:1000px){
+  .ov-top{left:10px;right:54px;max-width:none;align-items:flex-start}
+  .lp{left:10px;right:auto}
+  .cartouche{top:104px}
+}
+@media (max-width:600px){
+  
+  .tb-k,.tb-links a.x{display:none}
+  .topbar{gap:10px}.tb-name{font-size:16px}.tb-links{gap:10px}
+  .lp{top:100px;left:8px;right:8px;min-width:0;max-height:calc(100% - 230px)}
+  .ov-top{left:8px;top:8px}
+  .cartouche{left:8px;top:100px;max-width:calc(100% - 16px);padding:10px 12px}
+  .cartouche h1{font-size:24px}
+  .ct-toggle{display:block}.ct-fold{display:none}
+  .ov-bl{display:none}
+  .maplibregl-ctrl-bottom-right{bottom:84px}
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+#map{position:absolute;inset:0}
+.chip[aria-pressed="true"]{background:#A3261B;color:#fff;border-color:#2B2119}
+.lp{top:60px}
+.keys{position:absolute;left:12px;bottom:12px;z-index:4;background:rgba(251,243,220,.95);border:1px solid #9C8656;border-radius:3px;padding:8px 10px;font:400 11.5px/1.25 var(--mono);color:#2B2119;max-width:250px;box-shadow:0 2px 8px rgba(60,40,10,.18)}
+.key b{display:block;font:400 15px/1.1 var(--hand);color:#A3261B;margin-bottom:5px;font-weight:400}
+.key .row{display:flex;align-items:center;gap:6px;margin:2px 0}
+.key i{display:inline-block;width:18px;height:11px;border:1px solid rgba(43,33,25,.5);flex:none}
+.key .dot{width:11px;height:11px;border-radius:50%;background:#1F1838;border:1.5px solid #2B2119}
+.hz{position:absolute;right:54px;bottom:34px;z-index:8;width:min(600px,calc(100% - 340px));background:rgba(251,245,228,.98);border:2px solid #2B2119;outline:1px solid #2B2119;outline-offset:-6px;padding:10px 14px 8px;color:#2B2119;box-shadow:0 3px 14px rgba(60,40,10,.25);font:400 13px/1.4 var(--mono)}
+.hz[hidden]{display:none}
+.hz h3{margin:0 26px 2px 0;font:400 22px/1.1 var(--hand);color:#A3261B}
+.hz .x{position:absolute;right:8px;top:6px;border:0;background:none;font:400 20px/1 var(--mono);color:#6E604E;cursor:pointer;min-width:30px;min-height:30px}
+.hz p{margin:0 0 4px}
+.hz svg{width:100%;height:auto;display:block}
+.hz svg .ax{font:400 10px var(--mono);fill:#6E604E}
+.hz svg .lg{font:400 10px var(--mono)}
+.hz .nt{color:#6E604E;font-size:11.5px}
+.hz a{color:#A3261B}
+@media (max-width:800px){
+  .pane{height:78svh;min-height:520px}
+  .hz{left:6px;right:6px;bottom:6px;width:auto;padding:8px 10px 6px;max-height:58%;overflow:auto}
+  .hz h3{font-size:19px}
+  .keys{display:none}
+  .chip .lg{display:none}
+  .chip{padding:8px 8px;font-size:11.5px}
+  .chips{gap:4px}
+  .ov-top{left:8px;right:54px;max-width:none;align-items:flex-start}
+  .lp{top:100px;left:8px;right:8px;min-width:0;max-height:calc(100% - 140px)}
+  .cartouche{top:100px}
+}
+.places{columns:2 260px;column-gap:28px;font:400 14px/1.45 var(--mono);padding-left:18px;margin:10px 0 18px}
+.places li{break-inside:avoid;margin:0 0 6px}
+.places a{cursor:pointer}
+
+.tl{position:absolute;left:50%;transform:translateX(-50%);bottom:14px;z-index:6;width:min(620px,calc(100% - 130px));background:rgba(251,245,228,.96);border:1px solid #9C8656;border-radius:4px;padding:7px 12px 6px;font:400 12.5px/1.3 var(--mono);color:#2B2119;box-shadow:0 2px 10px rgba(60,40,10,.2);display:flex;align-items:center;gap:10px}
+.tl input[type=range]{flex:1;accent-color:#A3261B;min-width:0;height:28px}
+.tl button{font:500 12px/1 var(--mono);background:#2B2119;color:#F6EED8;border:0;border-radius:3px;padding:7px 9px;cursor:pointer;min-height:30px;min-width:34px}
+.tl .yr{font:400 21px/1 var(--hand);color:#A3261B;min-width:118px;text-align:center}
+.tl .sm{font-size:11px;color:#6E604E;white-space:nowrap}
+.city{font:500 12px/1 var(--mono);background:rgba(251,245,228,.96);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:7px 10px;min-height:34px;cursor:pointer}
+.key .bar{height:10px;border:1px solid #2B2119;margin:4px 0 2px;background:linear-gradient(90deg,#1F1838,#3B2F63,#5B4A8B,#7E6CA8,#A99BC0,#D9C9A3,#EBCB7A,#F0B23A,#E39A2C)}
+.key .ends{display:flex;justify-content:space-between;font-size:10.5px;color:#6E604E}
+.key .sw{display:inline-block;width:14px;height:11px;border:1px solid rgba(43,33,25,.5);vertical-align:-1px;margin-right:5px}
+.keys{bottom:84px}
+@media (max-width:800px){.tl{width:calc(100% - 16px);bottom:8px;padding:6px 8px;gap:6px}.tl .yr{font-size:17px;min-width:86px}.tl .sm{display:none}.maplibregl-ctrl-bottom-right{bottom:70px}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a class="tb-name" href="#mapWrap">Shadows of the giants</a>
+  <span class="tb-k">Data study · 2026</span>
+  <nav class="tb-links"><a href="#essay">About</a><button class="theme" id="theme" aria-label="Toggle dark mode">◐</button><a href="https://doi.org/10.5281/zenodo.24075303">Paper</a><a class="x" href="https://github.com/Tristan-Hotham/tower-shadows">Data and code</a></nav>
+</div>
+<div class="mapband">
+  <div class="pane" id="mapWrap" data-fullscreen-map role="application" aria-label="Map of building shadows hour by hour in UK city centres">
+    <div id="map"></div>
+    <div class="nojs" id="nojs">Loading the map. It needs JavaScript and WebGL.</div>
+    <div class="cartouche" id="cartouche">
+      <button class="ct-toggle" id="ctToggle" aria-expanded="true" title="Show the title">Shadows of the giants <span aria-hidden="true">▾</span></button>
+      <button class="ct-fold" id="ctFold" title="Fold the title" aria-label="Fold the title">▴</button>
+      <div class="ct-body">
+        <div class="kicker"><b>Data study</b><span>2026</span></div>
+        <h1>Shadows of the <span class="a">giants</span></h1>
+        <p class="dek">Where the buildings of eight UK city centres cast their shadows, hour by hour, on the shortest day, the equinox and midsummer. Red marks ground in shadow only because of towers of 50 m or more. Tap a tower or a street.</p>
+        <div class="byline">Dr Tristan Hotham · Independent researcher · 2026</div>
+      </div>
+    </div>
+    <div class="ov ov-top">
+      <div class="srch"><input type="search" id="q" placeholder="Find a street, square or city" aria-label="Find a street, square or city" autocomplete="off"><ul class="sug" id="sug" role="listbox"></ul></div>
+      <div class="chips"><select class="city" id="city" aria-label="City centre"></select><button class="chip" data-d="dec" aria-pressed="true">21 Dec</button><button class="chip" data-d="mar" aria-pressed="false">20 Mar</button><button class="chip" data-d="jun" aria-pressed="false">21 Jun</button><button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button></div>
+    </div>
+    <div class="lp" id="lp" role="dialog" aria-label="Map layers">
+      <h4>Layers</h4>
+      <h5>Sun and shadow</h5>
+      <label><input type="checkbox" id="lySh" checked> Shadows at the hour</label>
+      <label><input type="checkbox" id="lyTw" checked> In red: shadow only because of towers</label>
+      <label><input type="checkbox" id="lyHr"> Hours of direct sun over the day</label>
+      <label><input type="checkbox" id="lySt" checked> Named streets, by hours of sun</label>
+      <label><input type="checkbox" id="lyOp" checked> Parks and squares, by hours of sun</label>
+      <label><input type="checkbox" id="lyT" checked> Towers of 50 m or more</label>
+      <h5>Map</h5>
+      <label><input type="checkbox" data-g="names" checked> Place names</label>
+      <label><input type="checkbox" data-g="roads" checked> Roads</label>
+      <label><input type="checkbox" data-g="rivers" checked> Rivers</label>
+      <label><input type="checkbox" data-g="tint" checked> Watercolour tints</label>
+      <label><input type="checkbox" id="modern"> Plain modern map (to see where you are)</label>
+    </div>
+    <div class="keys" id="keys"><div class="key"><b>Sun and shadow</b>
+      <div class="row"><span class="sw" style="background:rgba(31,24,56,.55)"></span>in shadow at this hour</div>
+      <div class="row"><span class="sw" style="background:rgba(163,38,27,.7)"></span>in shadow only because of towers</div>
+      <div style="margin-top:6px">Hours of direct sun on the day</div><div class="bar"></div><div class="ends"><span>none</span><span>half</span><span>all day</span></div>
+      <div class="row" style="margin-top:4px"><span class="sw" style="background:#A3261B;border-radius:50%;width:11px"></span>tower (bigger: taller)</div>
+      <div class="nt" id="sunTxt" style="margin-top:4px;color:#6E604E"></div></div></div>
+    <div class="tl" id="tl" role="group" aria-label="Time of day">
+      <button id="play" aria-label="Play through the day">▶</button>
+      <span class="yr" id="hr">12:00</span>
+      <input type="range" id="hrs" min="0" max="7" step="1" value="3" aria-label="Hour of the day">
+      <span class="sm" id="alt"></span>
+    </div>
+  </div>
+</div>
+<div class="wrap" id="essay">
+<p class="lede" style="margin-top:6px">On the shortest day the sun at noon stands only 15.1 degrees above the horizon in London and 10.7 in Edinburgh. Every building casts a shadow 3.7 times its height in London at midday, and far longer in the morning and afternoon. As British cities build upwards, which streets and squares lose their winter sun, and how much of the loss is down to the towers?</p>
+<p>I took the heights of every building in OpenStreetMap across eight city centres, laid them on a 5 m grid with the lie of the land beneath, and traced the sun every ten minutes from sunrise to sunset on 21 December, 20 March and 21 June. The map shows the shadows on each hour. Red marks ground that would be in sun if the towers of 50 m or more were taken away.</p>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap contributors via OpenFreeMap (ODbL), AWS Terrain Tiles · Base map: <a href="https://maps.tristanhotham.com/ink-map/">The Inked World</a></div>
+<div class="stats">
+<div class="stat"><b>1.15 km</b><span>the Shard's shadow at noon on 21 December</span></div>
+<div class="stat"><b>0.76 h</b><span>of winter sun towers take from the average square metre of open ground at Canary Wharf</span></div>
+<div class="stat"><b>22%</b><span>of open ground in central London gets no direct sun on 21 December</span></div>
+<div class="stat"><b>33%</b><span>in Edinburgh, which has almost no towers at all</span></div>
+</div>
+
+<h2><span class="n">01 · Long shadows</span>A winter shadow is nearly four times as long</h2>
+<p>At noon on 21 December a shadow is 3.7 times as long as whatever casts it in London and 5.3 times in Edinburgh. A tower of 300 m in London would throw a noon shadow 1,110 m long. The Shard, 310 m tall in OpenStreetMap, reaches 1,146 m at noon on the solstice and about 1,650 m two hours either side, against 395 m at the equinox and 165 m at midsummer.</p>
+<div class="figure"><img src="img/length.jpg" alt="Line chart of the noon shadow as a multiple of height through the year: about 0.5 in June and 3.7 in December in London, higher in Edinburgh" loading="lazy"><p class="src">The noon shadow as a multiple of the height, through the year.</p></div>
+<div class="figure"><img src="img/day.jpg" alt="Seven small maps of the City of London and the Southbank from 09:00 to 15:00 on 21 December, with dark shadows over most streets and red patches where the towers alone shade the ground" loading="lazy"><p class="src">The City of London through the shortest day. Dark: in shadow. Red: in shadow only because of towers of 50 m or more.</p></div>
+
+<h2><span class="n">02 · Street level</span>The street, not the tower, takes most of the sun</h2>
+<p>In winter the dense ordinary city does most of the damage. On the average square metre of open ground in central London, direct sun lasts 2.8 hours of a 7.7 hour day; without any buildings it would be 7.6. Removing only the towers would give back 0.18 hours. Canary Wharf is the exception: there the towers take 0.76 hours from the average square metre, and 26% of the open ground loses an hour or more to them. Manchester, with its cluster of towers at the south end of Deansgate, comes next (0.48 hours).</p>
+<div class="figure"><img src="img/compare.jpg" alt="Bar chart for eight city centres: hours of direct sun on 21 December as built, what the towers take, what all buildings take and what the land takes; towers take most at Canary Wharf and Manchester" loading="lazy"><p class="src">Average hours of direct sun on open ground on 21 December.</p></div>
+<div class="figure"><img src="img/cities.jpg" alt="Eight maps of city centres coloured from dark violet (no sun) to gold (all day) for 21 December, with buildings in buff" loading="lazy"><p class="src">Hours of direct sun at street level on 21 December, 3 km across each centre.</p></div>
+<div class="figure"><img src="img/canary.jpg" alt="Two maps of Canary Wharf on 21 December, as built and with towers removed: the streets between the towers are dark violet as built and mostly gold without the towers" loading="lazy"><p class="src">Canary Wharf on 21 December, as built and with the towers of 50 m or more removed.</p></div>
+
+<h2><span class="n">03 · The darkest streets</span>Where the towers take the most</h2>
+<p>The streets that lose most to towers are at Canary Wharf: on 21 December South Colonnade keeps 0.2 hours of direct sun, against 6.0 without the towers. Of open spaces, Canada Square Park at Canary Wharf loses the most, keeping 0.0 hours of a possible 5.5. In central London the biggest losses are round Battersea Power Station and the new towers beside it (Circus Road South keeps 0.6 hours of 6.4), on the Marylebone Flyover, and at Elephant and Castle and Vauxhall. 209 of 3,469 named streets lose an hour or more to towers on the shortest day.</p>
+<div class="figure"><img src="img/streets.jpg" alt="Bar chart of ten streets and five open spaces, mostly at Canary Wharf, showing hours of sun on 21 December as built and without towers" loading="lazy"><p class="src">The streets and open spaces that lose most winter sun to towers.</p></div>
+<p>Edinburgh has hardly any buildings over 50 m in its centre, yet it is the darkest of the eight: 33% of its open ground gets no direct sun on 21 December. It is the furthest north, so its noon sun is only 10.7 degrees up. The land takes about an hour of a seven-hour day on average, more than anywhere else, but on its own it leaves only 0.7% of open ground without sun. The all-day shade is cast by ordinary buildings: on flat ground they alone would leave 29% in shadow, and the ridge of the Old Town above its valleys adds the rest.</p>
+
+<h2><span class="n">04 · How I did this</span>Heights, a grid and the sun</h2>
+<p><b>Buildings.</b> Heights come from OpenStreetMap through the OpenFreeMap vector tiles: each building part's height, else its number of storeys at 3.66 m each, else a default of 5 m. The default covers a lot: between 41% of building footprint at Canary Wharf and 74% in Liverpool has neither a height nor a storey count. Tall buildings nearly always have a height or a storey count, but ordinary buildings drawn at 5 m are too short, which makes the streets look sunnier than they are and, if anything, inflates the share put down to the towers, since some ground they shade would already be in the shade of taller ordinary buildings. Heights from storeys can also run high for residential towers: Landmark Pinnacle at Canary Wharf (75 storeys, 233 m) comes out at 275 m, and the tallest tower of South Quay Plaza (68 storeys, 215 m) at 249 m.</p>
+<div class="figure"><img src="img/heights.jpg" alt="Bar chart: for each city centre, the share of building footprint with a height in metres, a height from storeys, or neither" loading="lazy"><p class="src">Where the building heights come from, by footprint area.</p></div>
+<p><b>Shadows.</b> Each centre is a 5 m grid with a 1.2 km margin so that buildings outside it can shade it. The ground is the AWS Terrain Tiles at about 90 m. For each position of the sun every ten minutes I swept the grid along the sun's direction and marked every cell whose sky line is blocked. I compared the city as built with the city without its building parts of 50 m or more, and without any buildings. The towers counted and mapped are those parts with a merged footprint of at least 300 square metres; thinner ones (spires, chimneys, masts) are left out of the count but are in the comparison, where they change the result by less than 0.01 hours. Sun positions include atmospheric refraction, which shortens the noon shadow very slightly (3.71 times the height in London without it).</p>
+<p><b>What this cannot say.</b> No trees, no awnings, no cloud. The terrain is too coarse for cliffs and cuttings. Building parts raised on stilts or bridges are treated as solid. Streets are the named roads in the tiles, measured 4 m either side of the line.</p>
+<details><summary>Sources and licences</summary>
+<ul class="plain">
+<li>Buildings, streets and open spaces: © OpenStreetMap contributors (ODbL), as vector tiles from <a href="https://openfreemap.org/">OpenFreeMap</a> (OpenMapTiles schema), release 20261101_080013_pt.</li>
+<li>Terrain: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>, zoom 10.</li>
+<li>Sun: NOAA general solar position equations with the Spencer (1971) series; refraction after Saemundsson (1986).</li>
+<li>Base map: The Inked World (MIT code, CC BY 4.0 text), OpenStreetMap vector tiles by OpenFreeMap. MapLibre GL JS 4.7.1 (BSD 3-Clause). Fonts: MedievalSharp and IM Fell (SIL OFL).</li>
+<li>Derived data from OpenStreetMap (streets, open spaces, towers, shadows) are under the ODbL; text and figures CC BY 4.0; code MIT.</li>
+</ul></details>
+<div class="cta"><a class="p" href="https://doi.org/10.5281/zenodo.24075303">Read the paper</a><a href="https://github.com/Tristan-Hotham/tower-shadows">Data and code</a><a href="https://blog.tristanhotham.com/2026/10/31/tower-shadows/">Blog post</a></div>
+<footer>
+<p>Dr Tristan Hotham, Independent researcher. ORCID <a href="https://orcid.org/0000-0003-4931-9349">0000-0003-4931-9349</a>.</p>
+<p>Cite as: Hotham, T. (2026) Shadows of the giants: winter sun at street level in eight UK city centres. Zenodo. <a href="https://doi.org/10.5281/zenodo.24075303">10.5281/zenodo.24075303</a></p>
+<p>Code: <a href="https://github.com/Tristan-Hotham/tower-shadows">github.com/Tristan-Hotham/tower-shadows</a> (MIT). Text and figures CC BY 4.0; derived data ODbL (OpenStreetMap).</p>
+<p>I wrote the text, with drafting and editing assistance from Claude (Anthropic), which also helped prepare the analysis code. I reviewed and checked all text and results.</p>
+</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+window.INKBASE = new URL('../ink-map/', location.href).href;
+</script>
+<script src="js/page.js?v=20261108"></script>
+<!-- map-fullscreen v1 -->
+<style id="mfs-style">
+.mfs-btn{position:absolute;top:10px;right:10px;z-index:1001;width:34px;height:34px;border:2px solid rgba(0,0,0,.25);border-radius:4px;background:#fff;color:#222;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.mfs-btn:hover{background:#f2f2f2}
+.mfs-btn svg{width:18px;height:18px}
+.mfs-host.mfs-btn-left .mfs-btn{right:auto;left:54px}
+.mfs-fake{position:fixed!important;inset:0!important;width:100vw!important;height:100vh!important;height:100dvh!important;max-width:none!important;max-height:none!important;margin:0!important;z-index:100000!important;border-radius:0!important}
+html.mfs-lock,html.mfs-lock body{overflow:hidden!important}
+:fullscreen.mfs-host{width:100vw!important;height:100vh!important;max-width:none!important;max-height:none!important;margin:0!important;border-radius:0!important}
+</style>
+<script id="mfs-script">
+(function(){
+  var ICON_OPEN='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+  var ICON_CLOSE='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+  function poke(){setTimeout(function(){window.dispatchEvent(new Event('resize'));},60);setTimeout(function(){window.dispatchEvent(new Event('resize'));},400);}
+  function realFS(){return document.fullscreenElement||document.webkitFullscreenElement;}
+  function add(el){
+    if(el.__mfs)return; el.__mfs=1;
+    var cs=getComputedStyle(el); if(cs.position==='static')el.style.position='relative';
+    el.classList.add('mfs-host');
+    // avoid clashing with a top-right Leaflet control (e.g. "Map layers")
+    var tr=el.querySelector('.leaflet-top.leaflet-right');
+    if(tr&&tr.children.length){ el.classList.add('mfs-btn-left'); }
+    var b=document.createElement('button'); b.type='button'; b.className='mfs-btn';
+    b.title='Full screen map'; b.setAttribute('aria-label','Full screen map'); b.innerHTML=ICON_OPEN;
+    ['click','dblclick','mousedown','touchstart','wheel'].forEach(function(t){b.addEventListener(t,function(e){e.stopPropagation();},{passive:t!=='click'});});
+    function setIcon(on){b.innerHTML=on?ICON_CLOSE:ICON_OPEN;b.title=on?'Exit full screen':'Full screen map';b.setAttribute('aria-label',b.title);}
+    function exitFake(){el.classList.remove('mfs-fake');document.documentElement.classList.remove('mfs-lock');setIcon(false);poke();}
+    b.addEventListener('click',function(e){
+      e.preventDefault();
+      if(el.classList.contains('mfs-fake')){exitFake();return;}
+      if(realFS()){(document.exitFullscreen||document.webkitExitFullscreen).call(document);return;}
+      var req=el.requestFullscreen||el.webkitRequestFullscreen;
+      if(req){ try{ var p=req.call(el); if(p&&p.catch)p.catch(function(){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();}); }catch(err){el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke();} }
+      else { el.classList.add('mfs-fake');document.documentElement.classList.add('mfs-lock');setIcon(true);poke(); }
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape'&&el.classList.contains('mfs-fake'))exitFake();});
+    ['fullscreenchange','webkitfullscreenchange'].forEach(function(t){document.addEventListener(t,function(){setIcon(realFS()===el);poke();});});
+    el.appendChild(b);
+  }
+  function scan(){
+    var els=document.querySelectorAll('[data-fullscreen-map], .leaflet-container, .maplibregl-map, .mapboxgl-map');
+    els.forEach(function(el){
+      if(el.closest('.mfs-host')&&!el.classList.contains('mfs-host'))return;
+      var r=el.getBoundingClientRect(); if(r.width<200||r.height<150)return;
+      add(el);
+    });
+  }
+  function start(){scan(); var n=0; var t=setInterval(function(){scan(); if(++n>20)clearInterval(t);},500);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start); else start();
+})();
+</script>
+<!-- /map-fullscreen -->
+
+<script src="https://maps.tristanhotham.com/assets/site-nav.js" defer></script>
+</body>
+</html>
