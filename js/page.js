@@ -4,8 +4,7 @@
 (function () {
   'use strict';
   const qs = new URLSearchParams(location.search);
-  const BASE = window.INKBASE, V = '?v=20261108';
-  const ENGINE = ['js/curated.js', 'js/ink-palette.js', 'js/ink-icons.js', 'js/ink-houses.js', 'js/ink-map.js', 'js/ink-extras.js'];
+  const STYLE = 'https://tiles.openfreemap.org/styles/positron';
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const small = matchMedia('(max-width:800px)').matches;
@@ -18,7 +17,6 @@
   if (small) fold(true);
   document.getElementById('ctToggle').addEventListener('click', () => fold(!ct.classList.contains('folded')));
   document.getElementById('ctFold').addEventListener('click', () => fold(true));
-  function loadScripts(list) { return list.reduce((p, src) => p.then(() => new Promise((res, rej) => { const el = document.createElement('script'); el.src = BASE + src + V; el.onload = res; el.onerror = () => rej(new Error('script ' + src)); document.head.appendChild(el); })), Promise.resolve()); }
   const hhmm = h => { const m = Math.round(h * 60); return String(Math.floor(m / 60) % 24).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0'); };
 
   function planes(c, d) {                       // decoded bit planes for all and towers-only
@@ -81,8 +79,10 @@
   }
   function setCity(c, fly) {
     city = c; document.getElementById('city').value = c; setHours();
+    document.querySelectorAll('#cities button').forEach(b => b.setAttribute('aria-pressed', b.dataset.c === c));
+    if (map.getSource('area-mask')) map.getSource('area-mask').setData({ type: 'Feature', properties: {}, geometry: { type: 'Polygon', coordinates: [[[-30, 40], [30, 40], [30, 65], [-30, 65], [-30, 40]], [...M[c].corners, M[c].corners[0]].reverse()] } });
     setImg('hr', `data/shadows/${c}_${day}_hours.png`, M[c].corners);
-    if (fly) { const cs = M[c].corners; map.fitBounds([[cs[0][0], cs[2][1]], [cs[1][0], cs[0][1]]], { padding: small ? 10 : 60, duration: 1200 }); }
+    if (fly) { const cs = M[c].corners; map.fitBounds([[cs[0][0], cs[2][1]], [cs[1][0], cs[0][1]]], { padding: small ? { top: 60, bottom: 130, left: 10, right: 10 } : { top: 60, bottom: 170, left: 280, right: 60 }, duration: 1200 }); }
     render();
   }
   function setDay(d, quiet) {
@@ -108,15 +108,23 @@
       <div>Average hours of direct sun at ground level:</div><table>${rows}</table><div class="nt">Buildings from OpenStreetMap heights; no trees or cloud.</div>`).addTo(map);
   }
   function setupLayers() {
-    const before = (map.getStyle().layers.find(l => l.metadata && ['names'].includes(l.metadata.group)) || {}).id;
+    const before = (map.getStyle().layers.find(l => l.type === 'symbol') || {}).id;
+    const src = Object.keys(map.getStyle().sources).find(s => map.getStyle().sources[s].type === 'vector');
     const c0 = M[city].corners;
+    const box = c => { const cs = M[c].corners; return [...cs, cs[0]]; };
+    map.addSource('area', { type: 'geojson', data: { type: 'FeatureCollection', features: Object.keys(M).map(c => ({ type: 'Feature', properties: { c, n: M[c].name }, geometry: { type: 'Polygon', coordinates: [box(c)] } })) } });
+    map.addSource('area-mask', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({ id: 'area-mask', type: 'fill', source: 'area-mask', paint: { 'fill-color': '#FFFFFF', 'fill-opacity': 0.55 } }, before);
+    map.addLayer({ id: 'area', type: 'line', source: 'area', paint: { 'line-color': '#A3261B', 'line-width': ['interpolate', ['linear'], ['zoom'], 5, 1.5, 12, 2.5], 'line-dasharray': [3, 2] } });
+    map.addLayer({ id: 'area-lbl', type: 'symbol', source: 'area', maxzoom: 11, layout: { 'text-field': ['get', 'n'], 'text-font': ['Noto Sans Bold'], 'text-size': 13, 'symbol-placement': 'point', 'text-anchor': 'bottom', 'text-offset': [0, -1] }, paint: { 'text-color': '#A3261B', 'text-halo-color': '#fff', 'text-halo-width': 2 } });
+    map.on('click', 'area', () => {});
     map.addSource('hr', { type: 'image', url: `data/shadows/${city}_${day}_hours.png`, coordinates: c0 });
     guard('hr', `data/shadows/${city}_${day}_hours.png`, c0);
     map.addLayer({ id: 'hr', type: 'raster', source: 'hr', layout: { visibility: 'none' }, paint: { 'raster-opacity': 0.8, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }, before);
     map.addSource('sh', { type: 'image', url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', coordinates: c0 });
     guard('sh', 'init', c0);
     map.addLayer({ id: 'sh', type: 'raster', source: 'sh', paint: { 'raster-opacity': 0.95, 'raster-resampling': 'nearest', 'raster-fade-duration': 0 } }, before);
-    try { map.addLayer({ id: 'bld', type: 'fill', source: 'ofm', 'source-layer': 'building', minzoom: 13, paint: { 'fill-color': '#E6D6B0', 'fill-outline-color': '#7A6446', 'fill-opacity': 0.95 } }, before); } catch (e) { }
+    try { map.addLayer({ id: 'bld', type: 'fill', source: src, 'source-layer': 'building', minzoom: 13, paint: { 'fill-color': '#E6D6B0', 'fill-outline-color': '#7A6446', 'fill-opacity': 0.95 } }, before); } catch (e) { }
     map.addSource('op', { type: 'geojson', data: 'data/open_spaces.geojson', attribution: 'Buildings, streets, parks: <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> (ODbL)' });
     map.addLayer({ id: 'op', type: 'fill', source: 'op', paint: { 'fill-color': ramp(day), 'fill-opacity': 0.0, 'fill-outline-color': '#2F6E5A' } }, before);
     map.addLayer({ id: 'opl', type: 'line', source: 'op', paint: { 'line-color': '#2F6E5A', 'line-width': 1.6, 'line-dasharray': [2, 1.5] } }, before);
@@ -127,7 +135,7 @@
     const tf = TW.map((t, i) => ({ type: 'Feature', properties: { i, h: t[3] }, geometry: { type: 'Point', coordinates: [t[1], t[2]] } }));
     map.addSource('tw', { type: 'geojson', data: { type: 'FeatureCollection', features: tf } });
     map.addLayer({ id: 'tw', type: 'circle', source: 'tw', paint: { 'circle-color': '#A3261B', 'circle-stroke-color': '#FBF5E4', 'circle-stroke-width': 1.2, 'circle-radius': ['interpolate', ['linear'], ['get', 'h'], 50, 3, 150, 6, 310, 10] } });
-    map.addLayer({ id: 'twl', type: 'symbol', source: 'tw', minzoom: 14, filter: ['>=', ['get', 'h'], 100], layout: { 'text-field': ['concat', ['to-string', ['get', 'h']], ' m'], 'text-font': ['Ink Italic'], 'text-size': 12, 'text-offset': [0, 1.1], 'text-anchor': 'top' }, paint: { 'text-color': '#A3261B', 'text-halo-color': 'rgba(251,245,228,.95)', 'text-halo-width': 1.5 } });
+    map.addLayer({ id: 'twl', type: 'symbol', source: 'tw', minzoom: 14, filter: ['>=', ['get', 'h'], 100], layout: { 'text-field': ['concat', ['to-string', ['get', 'h']], ' m'], 'text-font': ['Noto Sans Italic'], 'text-size': 12, 'text-offset': [0, 1.1], 'text-anchor': 'top' }, paint: { 'text-color': '#A3261B', 'text-halo-color': 'rgba(251,245,228,.95)', 'text-halo-width': 1.5 } });
     map.on('click', e => {
       const t = map.queryRenderedFeatures(e.point, { layers: ['tw'] })[0];
       if (t) { const r = TW[t.properties.i]; city = r[0]; popupTower(r, e.lngLat); return; }
@@ -147,13 +155,14 @@
     document.getElementById('lySt').addEventListener('change', e => vis('st', e.target.checked));
     document.getElementById('lyOp').addEventListener('change', e => { vis('op', e.target.checked); vis('opl', e.target.checked); });
     document.getElementById('lyT').addEventListener('change', e => { vis('tw', e.target.checked); vis('twl', e.target.checked); vis('tl', e.target.checked); });
-    const boxes = [...lp.querySelectorAll('input[data-g]')], modern = document.getElementById('modern');
-    const base = () => { const m = modern.checked; boxes.forEach(b => { try { InkMap.setGroup(map, b.dataset.g, b.checked && !(m && b.dataset.g === 'tint')); } catch (e) { } });
-      try { InkMap.setGroup(map, 'paper', !m); InkMap.setGroup(map, 'modern', m); InkMap.setGroup(map, 'coast', !m); } catch (e) { } };
-    boxes.forEach(b => b.addEventListener('change', base)); modern.addEventListener('change', base); base();
+    document.getElementById('lyArea').addEventListener('change', e => ['area', 'area-mask', 'area-lbl'].forEach(l => vis(l, e.target.checked)));
     const sel = document.getElementById('city');
     Object.keys(M).forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = M[k].name; sel.appendChild(o); });
     sel.addEventListener('change', () => setCity(sel.value, true));
+    const row = document.getElementById('cities');
+    Object.keys(M).forEach(k => { const b = document.createElement('button'); b.dataset.c = k; b.setAttribute('aria-pressed', k === city);
+      b.innerHTML = `<img src="data/shadows/${k}_dec_hours.png" alt="" loading="lazy">${esc(M[k].name.replace('Central ', ''))}`;
+      b.addEventListener('click', () => setCity(k, true)); row.appendChild(b); });
     document.querySelectorAll('.chip[data-d]').forEach(b => b.addEventListener('click', () => setDay(b.dataset.d)));
     const s = document.getElementById('hrs'); s.addEventListener('input', () => { hi = +s.value; render(); });
     let timer = null; const play = document.getElementById('play');
@@ -182,14 +191,11 @@
   }
   Promise.all([fetch('data/shadow_meta.json').then(r => r.json()), fetch('data/towers.json').then(r => r.json())]).then(([m, t]) => {
     M = m; TW = t.towers; if (!M[city]) city = 'london'; if (!DN[day]) day = 'dec';
-    const opts = { base: BASE, winter: false };
-    if (qs.get('tj')) opts.tilejson = qs.get('tj');
-    if (qs.get('dem')) opts.dem = qs.get('dem');
-    if (qs.get('demmax')) opts.demMax = +qs.get('demmax');
     const at = (qs.get('at') || '').split(',').map(Number);
     const cs = M[city].corners;
-    opts.mapOptions = at.length === 3 && at.every(isFinite) ? { center: [at[1], at[0]], zoom: at[2] } : { bounds: [[cs[0][0], cs[2][1]], [cs[1][0], cs[0][1]]], fitBoundsOptions: { padding: small ? 4 : 40 } };
-    return loadScripts(ENGINE).then(() => InkMap.create('map', opts));
+    const mo = at.length === 3 && at.every(isFinite) ? { center: [at[1], at[0]], zoom: at[2] } : { bounds: [[cs[0][0], cs[2][1]], [cs[1][0], cs[0][1]]], fitBoundsOptions: { padding: small ? 10 : { top: 60, bottom: 170, left: 40, right: 40 } } };
+    const m0 = new maplibregl.Map(Object.assign({ container: 'map', style: STYLE, attributionControl: { compact: true }, maxZoom: 18.5 }, mo));
+    return new Promise((res, rej) => { m0.once('load', () => res(m0)); m0.once('error', e => { if (!m0.loaded()) rej(e.error || e); }); });
   }).then(mm => {
     map = mm; window.__map = mm;
     mm.on('error', e => { const er = e && e.error; if (er && (er.name === 'AbortError' || /abort/i.test(er.message || ''))) return; console.error(er || e); });   // aborted loads are expected when the hour or city changes fast
@@ -197,7 +203,6 @@
     mm.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
     const foldAt = () => document.querySelectorAll('.maplibregl-ctrl-attrib.maplibregl-compact').forEach(at => { at.classList.remove('maplibregl-compact-show'); at.removeAttribute('open'); });
     mm.once('idle', foldAt); setTimeout(foldAt, 1500);
-    try { ['heritage', 'flight', 'animals', 'farms', 'towns', 'mountains', 'forests'].forEach(g => InkMap.setGroup(mm, g, false)); } catch (e) { }
     setupLayers(); setupSearch();
     if (qs.get('hour')) { const md = M[city].dates[day]; const i = md.hours.indexOf(+qs.get('hour')); if (i >= 0) hi = i; }
     setDay(day, true); setCity(city, false);

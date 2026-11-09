@@ -181,6 +181,12 @@ table.t td.r,table.t th.r{text-align:right}
 .tl button{font:500 12px/1 var(--mono);background:#2B2119;color:#F6EED8;border:0;border-radius:3px;padding:7px 9px;cursor:pointer;min-height:30px;min-width:34px}
 .tl .yr{font:400 21px/1 var(--hand);color:#A3261B;min-width:118px;text-align:center}
 .tl .sm{font-size:11px;color:#6E604E;white-space:nowrap}
+.cities{position:absolute;left:276px;right:60px;bottom:86px;z-index:6;display:flex;justify-content:safe center;gap:6px;overflow-x:auto;scrollbar-width:none;padding:4px}
+.cities::-webkit-scrollbar{display:none}
+.cities button{flex:0 0 auto;width:92px;padding:0 0 4px;border:1px solid #9C8656;border-radius:4px;background:rgba(251,245,228,.97);cursor:pointer;font:500 11px/1.15 var(--mono);color:#2B2119;box-shadow:0 1px 4px rgba(60,40,10,.2);overflow:hidden}
+.cities button img{display:block;width:100%;height:56px;object-fit:cover;background:#1F1838;margin-bottom:3px;image-rendering:auto}
+.cities button[aria-pressed="true"]{border:2px solid #A3261B;background:#fff;box-shadow:0 2px 8px rgba(163,38,27,.35)}
+@media (max-width:800px){.cities{bottom:64px;left:8px;right:8px;justify-content:flex-start}.cities button{width:74px}.cities button img{height:42px}}
 .city{font:500 12px/1 var(--mono);background:rgba(251,245,228,.96);color:#2B2119;border:1px solid #9C8656;border-radius:999px;padding:7px 10px;min-height:34px;cursor:pointer}
 .key .bar{height:10px;border:1px solid #2B2119;margin:4px 0 2px;background:linear-gradient(90deg,#1F1838,#3B2F63,#5B4A8B,#7E6CA8,#A99BC0,#D9C9A3,#EBCB7A,#F0B23A,#E39A2C)}
 .key .ends{display:flex;justify-content:space-between;font-size:10.5px;color:#6E604E}
@@ -211,8 +217,9 @@ table.t td.r,table.t th.r{text-align:right}
     </div>
     <div class="ov ov-top">
       <div class="srch"><input type="search" id="q" placeholder="Find a street, square or city" aria-label="Find a street, square or city" autocomplete="off"><ul class="sug" id="sug" role="listbox"></ul></div>
-      <div class="chips"><select class="city" id="city" aria-label="City centre"></select><button class="chip" data-d="dec" aria-pressed="true">21 Dec</button><button class="chip" data-d="mar" aria-pressed="false">20 Mar</button><button class="chip" data-d="jun" aria-pressed="false">21 Jun</button><button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button></div>
+      <div class="chips"><select class="city" id="city" aria-label="City centre" hidden></select><button class="chip" data-d="dec" aria-pressed="true">21 Dec</button><button class="chip" data-d="mar" aria-pressed="false">20 Mar</button><button class="chip" data-d="jun" aria-pressed="false">21 Jun</button><button class="chip lyr" id="lyrBtn" aria-expanded="false" aria-controls="lp">Layers</button></div>
     </div>
+    <div class="cities" id="cities" role="group" aria-label="Choose a city centre"></div>
     <div class="lp" id="lp" role="dialog" aria-label="Map layers">
       <h4>Layers</h4>
       <h5>Sun and shadow</h5>
@@ -222,12 +229,7 @@ table.t td.r,table.t th.r{text-align:right}
       <label><input type="checkbox" id="lySt" checked> Named streets, by hours of sun</label>
       <label><input type="checkbox" id="lyOp" checked> Parks and squares, by hours of sun</label>
       <label><input type="checkbox" id="lyT" checked> Towers of 50 m or more</label>
-      <h5>Map</h5>
-      <label><input type="checkbox" data-g="names" checked> Place names</label>
-      <label><input type="checkbox" data-g="roads" checked> Roads</label>
-      <label><input type="checkbox" data-g="rivers" checked> Rivers</label>
-      <label><input type="checkbox" data-g="tint" checked> Watercolour tints</label>
-      <label><input type="checkbox" id="modern"> Plain modern map (to see where you are)</label>
+      <label><input type="checkbox" id="lyArea" checked> Outline of each mapped city centre</label>
     </div>
     <div class="keys" id="keys"><div class="key"><b>Sun and shadow</b>
       <div class="row"><span class="sw" style="background:rgba(31,24,56,.55)"></span>in shadow at this hour</div>
@@ -246,7 +248,7 @@ table.t td.r,table.t th.r{text-align:right}
 <div class="wrap" id="essay">
 <p class="lede" style="margin-top:6px">On the shortest day the sun at noon stands only 15.1 degrees above the horizon in London and 10.7 in Edinburgh. Every building casts a shadow 3.7 times its height in London at midday, and far longer in the morning and afternoon. As British cities build upwards, which streets and squares lose their winter sun, and how much of the loss is down to the towers?</p>
 <p>I took the heights of every building in OpenStreetMap across eight city centres, laid them on a 5 m grid with the lie of the land beneath, and traced the sun every ten minutes from sunrise to sunset on 21 December, 20 March and 21 June. The map shows the shadows on each hour. Red marks ground that would be in sun if the towers of 50 m or more were taken away.</p>
-<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap contributors via OpenFreeMap (ODbL), AWS Terrain Tiles · Base map: <a href="https://maps.tristanhotham.com/ink-map/">The Inked World</a></div>
+<div class="byline">Dr Tristan Hotham · Independent researcher · 2026 · Data: OpenStreetMap contributors via OpenFreeMap (ODbL), AWS Terrain Tiles · Base map: OpenFreeMap Positron</div>
 <div class="stats">
 <div class="stat"><b>1.15 km</b><span>the Shard's shadow at noon on 21 December</span></div>
 <div class="stat"><b>0.76 h</b><span>of winter sun towers take from the average square metre of open ground at Canary Wharf</span></div>
@@ -280,7 +282,7 @@ table.t td.r,table.t th.r{text-align:right}
 <li>Buildings, streets and open spaces: © OpenStreetMap contributors (ODbL), as vector tiles from <a href="https://openfreemap.org/">OpenFreeMap</a> (OpenMapTiles schema), release 20261101_080013_pt.</li>
 <li>Terrain: <a href="https://registry.opendata.aws/terrain-tiles/">AWS Terrain Tiles</a>, zoom 10.</li>
 <li>Sun: NOAA general solar position equations with the Spencer (1971) series; refraction after Saemundsson (1986).</li>
-<li>Base map: The Inked World (MIT code, CC BY 4.0 text), OpenStreetMap vector tiles by OpenFreeMap. MapLibre GL JS 4.7.1 (BSD 3-Clause). Fonts: MedievalSharp and IM Fell (SIL OFL).</li>
+<li>Base map: OpenFreeMap Positron style, from OpenStreetMap vector tiles (ODbL). MapLibre GL JS 4.7.1 (BSD 3-Clause).</li>
 <li>Derived data from OpenStreetMap (streets, open spaces, towers, shadows) are under the ODbL; text and figures CC BY 4.0; code MIT.</li>
 </ul></details>
 <div class="cta"><a class="p" href="https://doi.org/10.5281/zenodo.24075303">Read the paper</a><a href="https://github.com/Tristan-Hotham/tower-shadows">Data and code</a><a href="https://blog.tristanhotham.com/2026/10/31/tower-shadows/">Blog post</a></div>
@@ -292,9 +294,6 @@ table.t td.r,table.t th.r{text-align:right}
 </footer>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
-<script>
-window.INKBASE = new URL('../ink-map/', location.href).href;
-</script>
 <script src="js/page.js?v=20261108"></script>
 <!-- map-fullscreen v1 -->
 <style id="mfs-style">
