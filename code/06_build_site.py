@@ -16,7 +16,7 @@ assert min(C, key=lambda k: C[k]["heights"]["default_pc"]) == "canary" and max(C
 assert R["streets_tow"][0]["city"] == "canary" and R["open_tow"][0]["city"] == "canary" and R["streets_tow"][1]["name"] == "Circus Road South"
 t = open(os.path.join(ROOT, "code", "page_template.html"), encoding="utf-8").read()
 t = t.replace("{{FULLSCREEN}}", open(os.path.join(ROOT, "code", "fullscreen_snippet.html"), encoding="utf-8").read())
-t = t.replace("{{REPO}}", REPO).replace("{{AI}}", AI).replace("{{BYLINE}}", BYLINE).replace("{{VERSION}}", "20261108")
+t = t.replace("{{REPO}}", REPO).replace("{{AI}}", AI).replace("{{BYLINE}}", BYLINE).replace("{{VERSION}}", "20261109")
 t = re.sub(r"\{\{([^{}|]+)(\|(\w+))?\}\}", lambda m: m.group(0) if m.group(1) in KEEP else fmt(get(R, m.group(1)), m.group(3)), t)
 assert set(re.findall(r"\{\{([^}]+)\}\}", t)) <= KEEP
 vis = re.sub(r"<script.*?</script>|<style.*?</style>|<!--.*?-->", "", t, flags=re.S)
