@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this data or code, please cite it as below."
+title: "Shadows of the Giants: Winter Sun at Street Level and the Shadows of Tall Buildings in Eight UK City Centres"
+type: dataset
+authors:
+  - family-names: Hotham
+    given-names: Tristan
+    orcid: "https://orcid.org/0000-0003-4931-9349"
+    affiliation: "Independent researcher"
+doi: "10.5281/zenodo.24075303"
+url: "https://maps.tristanhotham.com/tower-shadows/"
+repository-code: "https://github.com/Tristan-Hotham/tower-shadows"
+license: CC-BY-4.0
+keywords:
+  - "urban shadow"
+  - "sunlight"
+  - "tall buildings"
+  - "OpenStreetMap"
+  - "building heights"
+  - "winter solstice"
+  - "United Kingdom"
